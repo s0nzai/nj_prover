@@ -1,7 +1,7 @@
 #!/bin/sh
 
 echo "\\documentclass[10pt, a4paper]{article}
-\\usepackage[a4paper, hmargin=21mm, vmargin=30mm]{geometry}
+\\usepackage[landscape, a4paper, hmargin=21mm, vmargin=30mm]{geometry}
 \\usepackage{graphicx}
 \\usepackage{bussproofs}
 \\def\\Ra{\\Rightarrow}
