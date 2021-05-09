@@ -17,6 +17,12 @@ let _ =
     let pt = Prove.prove (C.of_list c) d in
     let nat = Natural_tree.of_sequent pt in
     let sn = Natural_tree.string_of nat in
+    let term = Term.construct nat in
+    let sterm = Term.string_of term in
     print_string sn;
+    print_string "\\DisplayProof}\n\n";
+    print_string "\\[";
+    print_string sterm;
+    print_string "\\]";
     print_newline ()
 
