@@ -1,7 +1,7 @@
 #!/bin/sh
 
 echo "\\documentclass[10pt, a4paper]{article}
-\\usepackage[landscape, a4paper, hmargin=21mm, vmargin=30mm]{geometry}
+\\usepackage[a4paper, hmargin=21mm, vmargin=30mm]{geometry}
 \\usepackage{graphicx}
 \\usepackage{bussproofs}
 \\def\\Ra{\\Rightarrow}
@@ -10,7 +10,6 @@ echo "\\documentclass[10pt, a4paper]{article}
 \\resizebox{\\textwidth}{!}{
 \\noindent" > $2.tex
 ./nj_prover $1 >> $2.tex
-echo "\\DisplayProof}
-\\end{document}" >> $2.tex
+echo "\\end{document}" >> $2.tex
 pdflatex $2.tex
 

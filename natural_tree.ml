@@ -1,7 +1,7 @@
 
 open Printf
 module F = Form
-module P = Proof_tree
+module P = Lj_tree
 module M = Map.Make(F)
 
 let idx = ref 1
@@ -67,12 +67,12 @@ let rec graft t1 t2 = match t1, t2 with
                 and rt2 = graft t1 rt2 in
                 Node(rule, k, d2, lt, rt1, rt2)
 
-let rec reduce_not = function
+let rec shorten_not = function
     | Nil -> Nil
     | Assume(_, _) -> Nil
     | Node(P.L_not, _, _, lt, rt, _) as t ->
-            let lt = reduce_not lt
-            and rt = reduce_not rt in
+            let lt = shorten_not lt
+            and rt = shorten_not rt in
             (match lt, rt with
             | Nil, Nil -> t
             | Nil, rt -> rt
@@ -81,8 +81,8 @@ let rec reduce_not = function
     | Node(P.R_impl, _, _, _, _, _) -> Nil
     | Node(P.L_or, _, _, _, _, _) -> Nil
     | Node(_, _, _, lt, rt, _) ->
-            let lt = reduce_not lt
-            and rt = reduce_not rt in
+            let lt = shorten_not lt
+            and rt = shorten_not rt in
             (match lt, rt with
             | Nil, Nil -> Nil
             | Nil, rt -> rt
@@ -106,7 +106,7 @@ let rec of_sequent_ m = function
     | P.Node(P.R_not, _, _, F.Not(p), lt, _) ->
             let (m, k) = let k = get_idx () in (M.add p k m, k) in
             let lt = of_sequent_ m lt in
-            (match reduce_not lt with
+            (match shorten_not lt with
             | Nil | Assume(_) ->
                     let t = Assume(k, p) in
                     Node(P.R_not, k, F.Not(p), lt, t, Nil)
@@ -126,7 +126,7 @@ let rec of_sequent_ m = function
             let lt = of_sequent_ m lt in
             let j = (try M.find (F.Not(p)) m with
             | Not_found -> 0) in
-            (match reduce_not lt with
+            (match shorten_not lt with
             | Nil | Assume(_) ->
                     let t1 = Assume(j, F.Not(p)) in
                     Node(P.L_not, 0, d, t1, lt, Nil)

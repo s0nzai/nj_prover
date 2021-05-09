@@ -3,7 +3,7 @@ open Printf
 
 module F = Form
 module N = Natural_tree
-module P = Proof_tree
+module L = Lj_tree
 module C = Char
 
 type t =
@@ -19,22 +19,22 @@ type t =
 let rec construct = function
     | N.Nil -> Var(0)
     | N.Assume(j, _) -> Var(j)
-    | N.Node(P.R_impl, j, _, lt, _, _) -> Lambda(j, construct lt)
-    | N.Node(P.L_impl, _, _, lt, rt, _) -> App(construct lt, construct rt)
-    | N.Node(P.R_and, _, _, lt, rt, _) -> Pair(construct lt, construct rt)
-    | N.Node(P.L_and, _, d, lt, _, _) ->
+    | N.Node(L.R_impl, j, _, lt, _, _) -> Lambda(j, construct lt)
+    | N.Node(L.L_impl, _, _, lt, rt, _) -> App(construct lt, construct rt)
+    | N.Node(L.R_and, _, _, lt, rt, _) -> Pair(construct lt, construct rt)
+    | N.Node(L.L_and, _, d, lt, _, _) ->
             (match N.conseq lt with
             | And(_, q) when d = q -> Proj(2, construct lt)
             | And(_, _) -> Proj(1, construct lt)
             | _ -> Var(0))
-    | N.Node(P.R_or, _, Or(_, q), lt, _, _) ->
+    | N.Node(L.R_or, _, Or(_, q), lt, _, _) ->
             if q = N.conseq lt then Inj(2, construct lt)
             else Inj(1, construct lt)
-    | N.Node(P.L_or, j, _, lt, lrt, rrt) ->
+    | N.Node(L.L_or, j, _, lt, lrt, rrt) ->
             Case(j, construct lrt, construct rrt, construct lt)
-    | N.Node(P.R_not, j, _, lt, rt, _) ->
+    | N.Node(L.R_not, j, _, lt, rt, _) ->
             Lambda(j, Error(construct lt, construct rt))
-    | N.Node(P.L_not, _, _, lt, rt, _) -> Error(construct lt, construct rt)
+    | N.Node(L.L_not, _, _, lt, rt, _) -> Error(construct lt, construct rt)
     | _ -> Var(0)
 
 let rm_paren s =

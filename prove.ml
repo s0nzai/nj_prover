@@ -1,11 +1,11 @@
 
 open Form
-open Proof_tree
+open Lj_tree
 
 module C = Set.Make(Form)
 
 exception Unproved
-exception Proved of Proof_tree.t
+exception Proved of Lj_tree.t
 
 (* apply_r : Context.t -> Context.t -> Form.t -> Proof_tree.t
  * h : formulae already appeared
