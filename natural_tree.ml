@@ -70,7 +70,13 @@ let rec graft t1 t2 = match t1, t2 with
 let rec reduce_not = function
     | Nil -> Nil
     | Assume(_, _) -> Nil
-    | Node(P.L_not, _, _, _, _, _) as t -> t
+    | Node(P.L_not, _, _, lt, rt, _) as t ->
+            let lt = reduce_not lt
+            and rt = reduce_not rt in
+            (match lt, rt with
+            | Nil, Nil -> t
+            | Nil, rt -> rt
+            | lt, _ -> lt)
     | Node(P.R_not, _, _, _, _, _) -> Nil
     | Node(P.R_impl, _, _, _, _, _) -> Nil
     | Node(P.L_or, _, _, _, _, _) -> Nil
@@ -120,8 +126,12 @@ let rec of_sequent_ m = function
             let lt = of_sequent_ m lt in
             let j = (try M.find (F.Not(p)) m with
             | Not_found -> 0) in
-            let t1 = Assume(j, F.Not(p)) in
-            Node(P.L_not, 0, d, t1, lt, Nil)
+            (match reduce_not lt with
+            | Nil | Assume(_) ->
+                    let t1 = Assume(j, F.Not(p)) in
+                    Node(P.L_not, 0, d, t1, lt, Nil)
+            | Node(_, _, _, lt, rt, _) ->
+                    Node(P.L_not, 0, d, lt, rt, Nil))
     | P.Node(P.L_impl, _, F.Impl(p, q), _, lt, rt) ->
             let lt = of_sequent_ m lt in
             let rt = of_sequent_ m rt in
