@@ -4,7 +4,7 @@ This is a toy program to put out a pdf contains a natural deduction proof diagra
 ## Usage
 
 ```Shell
-./nj_prover.sh deduction filename
+./nj_prover deduction filename
 ```
 
 _deduction_ is form of "p\_1,p\_1,...,p\_n => q", where p\_j and q are first-order propositional formulae.
