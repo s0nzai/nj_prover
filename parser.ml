@@ -40,12 +40,12 @@ let right_op op_list term =
                 (op2, bin_apply t1 t2 op1) in
             snd (L.fold_left apply x xs)
 
-let rec prim () =
+let rec atom () =
     let sym = !curr in
     read_t ();
     match sym with
     | TNot ->
-            let e = prim () in
+            let e = atom () in
             Not(e)
     | TVar(v) -> Var(v)
     | TLParen ->
@@ -55,20 +55,20 @@ let rec prim () =
             else raise (Parse(!curr))
     | _ -> raise (Parse(!curr))
 and conj () =
-    let e1 = prim () in
-    if !curr = TOr
-    then
-        (read_t ();
-        let e2 = conj () in
-        Or(e1, e2))
-    else e1
-and disj () =
-    let e1 = conj () in
+    let e1 = atom () in
     if !curr = TAnd
     then
         (read_t ();
-        let e2 = disj () in
+        let e2 = conj () in
         And(e1, e2))
+    else e1
+and disj () =
+    let e1 = conj () in
+    if !curr = TOr
+    then
+        (read_t ();
+        let e2 = disj () in
+        Or(e1, e2))
     else e1
 and expr () =
     let e1 = disj () in
